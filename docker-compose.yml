@@ -1,29 +1,22 @@
 version: "3.8"
 
 services:
-  stable-diffusion:
+  webui:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "7860:7860"
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+      - COMMANDLINE_ARGS=--listen --enable-insecure-extension-access
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: all
+              count: 1
               capabilities: [gpu]
     volumes:
       - ./models:/stable-diffusion-webui/models
       - ./outputs:/stable-diffusion-webui/outputs
-    command: >
-      bash -c "python launch.py 
-      --listen 
-      --enable-insecure-extension-access 
-      --xformers 
-      --api 
-      --cors-allow-origins * 
-      --port 7860"
+      - ./extensions:/stable-diffusion-webui/extensions
