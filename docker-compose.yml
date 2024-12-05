@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  stable-diffusion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7860:7860"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./models:/stable-diffusion-webui/models
+      - ./outputs:/stable-diffusion-webui/outputs
+    command: >
+      bash -c "python launch.py 
+      --listen 
+      --enable-insecure-extension-access 
+      --xformers 
+      --api 
+      --cors-allow-origins * 
+      --port 7860"
